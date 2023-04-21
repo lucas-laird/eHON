@@ -10,6 +10,7 @@ from torch_geometric.data import InMemoryDataset, Data
 from torch_geometric.utils import to_undirected, to_networkx
 import toponetx as tnx
 import numpy as np
+import json
 
 class ShapeNet_core(InMemoryDataset):
     def __init__(self, root, transform = None, pre_transform = None, pre_filter = None, 
@@ -35,8 +36,8 @@ class ShapeNet_core(InMemoryDataset):
         return osp.join(self.root, self.name, 'processed')
     @property
     def raw_file_names(self):
-        if "subsampled1000" in self.name:
-            return ["subsampled1000_train_test_dict.json"]
+        if "even15k" in self.name:
+            return ["even15k_train_test_dict.json"]
         elif "even10k" in self.name:
             return ["even10k_train_test_dict.json"]
         elif "even1k" in self.name:
