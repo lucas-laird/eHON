@@ -11,6 +11,7 @@ from torch_geometric.utils import to_undirected, to_networkx
 import toponetx as tnx
 import numpy as np
 import json
+from tqdm import tqdm
 
 class ShapeNet_core(InMemoryDataset):
     def __init__(self, root, transform = None, pre_transform = None, pre_filter = None, 
@@ -36,8 +37,8 @@ class ShapeNet_core(InMemoryDataset):
         return osp.join(self.root, self.name, 'processed')
     @property
     def raw_file_names(self):
-        if "even15k" in self.name:
-            return ["even15k_train_test_dict.json"]
+        if "additional5k" in self.name:
+            return ["additional5k_train_test_dict.json"]
         elif "even10k" in self.name:
             return ["even10k_train_test_dict.json"]
         elif "even1k" in self.name:
@@ -51,36 +52,38 @@ class ShapeNet_core(InMemoryDataset):
     
     def process(self):
         with open(self.raw_paths[0], "r") as f:
-            train_test_dict = json.load(f)
-        train_names = train_test_dict["train"]
-        if self.mini:
-            train_names = train_names[0:10000]
-        train_data = []
-        for name in train_names:
-            #print(name)
-            file_name = name + ".pth"
-            data = torch.load(osp.join(self.raw_dir, file_name))
-            #print(self.pre_transform)
-            if self.pre_transform is not None:
-                data = self.pre_transform(data)
-            train_data.append(data)
-            #print(data)
-        torch.save(self.collate(train_data), self.processed_paths[0])
-        
-        
-        test_data = []
-        test_names = train_test_dict["test"]
-        if self.mini:
-            test_names = test_names[0:2000]
-        for name in test_names:
-            #print(name)
-            file_name = name + ".pth"
-            data = torch.load(osp.join(self.raw_dir, file_name))
-            if self.pre_transform is not None:
-                data = self.pre_transform(data)
-            test_data.append(data)
-            #print(data)
-        torch.save(self.collate(test_data), self.processed_paths[1])
+                train_test_dict = json.load(f)
+        if not osp.exists(self.processed_paths[0]):
+            train_names = train_test_dict["train"]
+            if self.mini:
+                train_names = train_names[0:10000]
+            train_data = []
+            for name in tqdm(train_names):
+                #print(name)
+                file_name = name
+                data = torch.load(osp.join(self.raw_dir, file_name))
+                #print(self.pre_transform)
+                if self.pre_transform is not None:
+                    data = self.pre_transform(data)
+                train_data.append(data)
+                #print(data)
+            torch.save(self.collate(train_data), self.processed_paths[0])
+        else:
+            print("train.pth already exists, skipping processing")
+        if not osp.exists(self.processed_paths[1]):
+            test_data = []
+            test_names = train_test_dict["test"]
+            if self.mini:
+                test_names = test_names[0:2000]
+            for name in tqdm(test_names):
+                #print(name)
+                file_name = name
+                data = torch.load(osp.join(self.raw_dir, file_name))
+                if self.pre_transform is not None:
+                    data = self.pre_transform(data)
+                test_data.append(data)
+                #print(data)
+            torch.save(self.collate(test_data), self.processed_paths[1])
         
 class SimplexData(Data):
     def __inc__(self, key, value, *args, **kwargs):

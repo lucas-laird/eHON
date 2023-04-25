@@ -40,6 +40,7 @@ class eHON_MPL_boundary(nn.Module):
             #outputs m_adj_ij
             self.boundary_up_mlp = nn.Sequential(
                 nn.Linear(input_nf+upper_nf+x_diff_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, hidden_nf)
             )
@@ -48,6 +49,7 @@ class eHON_MPL_boundary(nn.Module):
         if lower_nf is not None:
             self.boundary_down_mlp = nn.Sequential(
                 nn.Linear(input_nf+lower_nf+x_diff_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, hidden_nf)
             )
@@ -56,12 +58,14 @@ class eHON_MPL_boundary(nn.Module):
         #outputs a new h_i with dim = output_nf
         self.cell_mlp = nn.Sequential(
             nn.Linear(mess_nf, hidden_nf),
+            nn.Dropout(p = 0.5, inplace = True),
             mlp_activation,
             nn.Linear(hidden_nf, output_nf)
         )
         if upper_nf is not None:
             self.coord_up_mlp = nn.Sequential(
                 nn.Linear(hidden_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, 1),
                 nn.Sigmoid()
@@ -69,6 +73,7 @@ class eHON_MPL_boundary(nn.Module):
         if lower_nf is not None:
             self.coord_down_mlp = nn.Sequential(
                 nn.Linear(hidden_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, 1), 
                 nn.Sigmoid()
@@ -198,6 +203,7 @@ class eHON_MPL_centroid(nn.Module):
             #outputs m_adj_ij
             self.boundary_up_mlp = nn.Sequential(
                 nn.Linear(input_nf+upper_nf+x_diff_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, hidden_nf)
             )
@@ -206,6 +212,7 @@ class eHON_MPL_centroid(nn.Module):
         if lower_nf is not None:
             self.boundary_down_mlp = nn.Sequential(
                 nn.Linear(input_nf+lower_nf+x_diff_nf, hidden_nf),
+                nn.Dropout(p = 0.5, inplace = True),
                 mlp_activation,
                 nn.Linear(hidden_nf, hidden_nf)
             )
@@ -214,6 +221,7 @@ class eHON_MPL_centroid(nn.Module):
         #outputs a new h_i with dim = output_nf
         self.cell_mlp = nn.Sequential(
             nn.Linear(mess_nf, hidden_nf),
+            nn.Dropout(p = 0.5, inplace = True),
             mlp_activation,
             nn.Linear(hidden_nf, output_nf)
         )
@@ -221,6 +229,7 @@ class eHON_MPL_centroid(nn.Module):
             if upper_nf is not None:
                 self.coord_up_mlp = nn.Sequential(
                     nn.Linear(hidden_nf, hidden_nf),
+                    nn.Dropout(p = 0.5, inplace = True),
                     mlp_activation,
                     nn.Linear(hidden_nf, 1),
                     nn.Sigmoid()
@@ -228,6 +237,7 @@ class eHON_MPL_centroid(nn.Module):
             if lower_nf is not None:
                 self.coord_down_mlp = nn.Sequential(
                     nn.Linear(hidden_nf, hidden_nf),
+                    nn.Dropout(p = 0.5, inplace = True),
                     mlp_activation,
                     nn.Linear(hidden_nf, 1), 
                     nn.Sigmoid()

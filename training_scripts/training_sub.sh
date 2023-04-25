@@ -11,8 +11,9 @@
 #SBATCH --error=logs/eHON_err.%j.err
 
 module load anaconda3/2021.05
+module load cuda/11.7
 
 source /home/laird.l/.bashrc
-source activate HON_env
+source activate HON_env2
 
-python eHON_training.py --dataset_name even10k_simplex_data --ne 100 --pooling max --x_agg sum --residual True
+python eHON_training.py --dataset_name even10k_simplex_data --ne 100 --pooling max --x_agg mean --residual True --use_additional False
